@@ -61,7 +61,6 @@ compile_commands.json
 
 # 忽略根目录下的build文件夹（包括所有子文件/子目录）
 build/
-# 额外防护：忽略所有以build开头的目录（兼容Qt Creator不同命名）
-build*/
+
 # 忽略Qt Creator的clangd缓存（即使不在build里也能忽略）
 .qtc_clangd/
