@@ -1,0 +1,14 @@
+#NewGameButton, #LoadSaveButton, #ContinueButton {
+    border-radius: 8px;
+    background-color: rgb(221,221,221);
+    color: #000;
+    border: none;
+    font-family: "Microsoft YaHei";
+    font-size: 20px;
+    font-weight: 500;
+    qproperty-font: "Microsoft YaHei" 20px 500;
+    color: #000;
+}
+#NewGameButton:hover, #LoadSaveButton:hover, #ContinueButton:hover {
+    background-color: #a9a9a9;
+}

@@ -2,6 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMediaPlayer>
+#include <QAudioOutput>
+#include <QPushButton>
+#include <QFile>
+
+#include "gamescene.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,5 +25,15 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QMediaPlayer *player;
+    QAudioOutput *audioOutput;
+
+    GameScene *gamescene;
+
+    void BtnClickAnimation(QPushButton* btn, const std::function<void()>& releaseCallback,int animationDuration = 100);
+
+    void paintEvent(QPaintEvent *);
+
+    void loadGameAndSwitchToGameScene(const QString& filename);
 };
 #endif // MAINWINDOW_H
