@@ -13,14 +13,16 @@ SOURCES += \
     gamescene.cpp \
     main.cpp \
     mainwindow.cpp \
-    map.cpp \
+    toolbar.cpp \
+    toolbutton.cpp \
     utils.cpp
 
 HEADERS += \
     config.h \
     gamescene.h \
     mainwindow.h \
-    map.h \
+    toolbar.h \
+    toolbutton.h \
     utils.h
 
 FORMS += \

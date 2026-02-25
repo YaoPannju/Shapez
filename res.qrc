@@ -13,6 +13,8 @@
         <file>res/title.png</file>
         <file>res/style.qss</file>
         <file>res/background_pic.png</file>
+        <file>res/bg.png</file>
+        <file>res/feather.mp3</file>
     </qresource>
     <qresource prefix="/belt">
         <file>res/belt/forward_0.png</file>

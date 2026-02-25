@@ -12,3 +12,13 @@
 #NewGameButton:hover, #LoadSaveButton:hover, #ContinueButton:hover {
     background-color: #a9a9a9;
 }
+
+GameScene QPushButton {
+    border: none;
+    background-color: transparent;
+}
+
+GameScene QPushButton:hover {
+    background-color: rgba(36, 173, 243, 50);
+    border-radius: 10px 10px;
+}
