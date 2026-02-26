@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    setFixedSize(1440,810);
+    setFixedSize(1440,864);
     setWindowIcon(QIcon(":/res/icon.ico"));
     setWindowTitle("Shapez");
 
@@ -133,7 +133,7 @@ void MainWindow::loadGameAndSwitchToGameScene(const QString &filename)
 {
     gamescene = new GameScene;
 
-    //gamescene->loadGame(filename);
+    gamescene->loadGame(filename);
 
     player->pause();
 

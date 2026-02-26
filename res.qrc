@@ -12,9 +12,15 @@
         <file>res/statistics.png</file>
         <file>res/title.png</file>
         <file>res/style.qss</file>
-        <file>res/background_pic.png</file>
         <file>res/bg.png</file>
         <file>res/feather.mp3</file>
+        <file>res/background_pic.png</file>
+        <file>res/PauseButton.png</file>
+        <file>res/PlayButton.png</file>
+        <file>res/bg2.png</file>
+        <file>res/store.png</file>
+        <file>res/Grid.png</file>
+        <file>res/ToolBar.png</file>
     </qresource>
     <qresource prefix="/belt">
         <file>res/belt/forward_0.png</file>
@@ -140,6 +146,7 @@
         <file>res/building_icons/virtual_processor.png</file>
         <file>res/building_icons/wire.png</file>
         <file>res/building_icons/wire_tunnel.png</file>
+        <file>res/building_icons/Eraser.png</file>
     </qresource>
     <qresource prefix="/buildings">
         <file>res/buildings/analyzer.png</file>
