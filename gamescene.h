@@ -4,8 +4,6 @@
 #include "toolbutton.h"
 #include "toolbar.h"
 #include "device.h"
-#include "conveyor.h"
-#include "center.h"
 #include "config.h"
 #include "store.h"
 
@@ -55,6 +53,8 @@ private:
     QAudioOutput *audioOutput;
     QString background;
 
+
+
     // 工具栏
     ToolBar tools;
 
@@ -73,10 +73,6 @@ private:
     bool conveyorDown, mouseDown;
     bool exist, reverse;
     Device *putting;
-    QList<Conveyor *> putConveyor;
-
-    // 存储中心
-    Center *center;
 
     QTimer timer;
 

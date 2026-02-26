@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
                 gamescene = nullptr;
                 qDebug() << "当前在主界面";
             });
+            gamescene->start();
             gamescene->show();
             qDebug() << "当前在游戏界面";
         });
@@ -87,6 +88,11 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete gamescene;
+}
+
+void MainWindow::GameInit()
+{
+    Device* miner1;
 }
 
 void MainWindow::BtnClickAnimation(QPushButton *btn, const std::function<void ()> &releaseCallback, int animationDuration)

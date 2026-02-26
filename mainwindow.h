@@ -8,6 +8,8 @@
 #include <QFile>
 
 #include "gamescene.h"
+#include "device.h"
+#include "config.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,6 +31,8 @@ private:
     QAudioOutput *audioOutput;
 
     GameScene *gamescene;
+
+    void GameInit();
 
     void BtnClickAnimation(QPushButton* btn, const std::function<void()>& releaseCallback,int animationDuration = 100);
 

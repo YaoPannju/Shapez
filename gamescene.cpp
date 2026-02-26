@@ -84,7 +84,6 @@ void GameScene::drawMap(QPainter &painter)
         QPixmap(":/res/Grid.png")
         );
 
-
     return;
 }
 
@@ -102,4 +101,5 @@ void GameScene::paintEvent(QPaintEvent *)
 void GameScene::play()
 {
     //游戏的逻辑
+    qDebug()<<"666";
 }
