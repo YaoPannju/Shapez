@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    setFixedSize(1440,864);
+    setFixedSize(1600,900);
     setWindowIcon(QIcon(":/res/icon.ico"));
     setWindowTitle("Shapez");
 
@@ -26,18 +26,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     QPushButton * newbtn = new QPushButton("新游戏",this);
     newbtn->setObjectName("NewGameButton");
-    newbtn->move(602,405);
-    newbtn->resize(236,60);
+    newbtn->move(680,405);
+    newbtn->resize(240,60);
 
     QPushButton * readbtn = new QPushButton("读取存档",this);
     readbtn->setObjectName("LoadSaveButton");
-    readbtn->move(602,575);
-    readbtn->resize(236,60);
+    readbtn->move(680,575);
+    readbtn->resize(240,60);
 
     QPushButton * continuebtn = new QPushButton("继续游戏",this);
     continuebtn->setObjectName("ContinueButton");
-    continuebtn->move(602,490);
-    continuebtn->resize(236,60);
+    continuebtn->move(680,490);
+    continuebtn->resize(240,60);
 
     BtnClickAnimation(newbtn, [this]() {
         QTimer::singleShot(500, this, [=](){
@@ -129,7 +129,7 @@ void MainWindow::paintEvent(QPaintEvent *)
     QBrush brush(QColor(255,255,255));
     painter.setBrush(brush);
     painter.setPen(Qt::NoPen);
-    painter.drawRoundedRect(552,390,340,260,10,10);
+    painter.drawRoundedRect(650,390,300,260,10,10);
 
     pix.load(":/res/logo.png");
     painter.drawPixmap(360,105,pix);

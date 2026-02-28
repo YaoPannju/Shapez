@@ -17,10 +17,10 @@
         <file>res/background_pic.png</file>
         <file>res/PauseButton.png</file>
         <file>res/PlayButton.png</file>
-        <file>res/bg2.png</file>
         <file>res/store.png</file>
         <file>res/Grid.png</file>
         <file>res/ToolBar.png</file>
+        <file>res/bg2.png</file>
     </qresource>
     <qresource prefix="/belt">
         <file>res/belt/forward_0.png</file>
@@ -221,5 +221,49 @@
         <file>res/sounds/place_building.wav</file>
         <file>res/sounds/ui_click.wav</file>
         <file>res/sounds/unlock_upgrade.wav</file>
+    </qresource>
+    <qresource prefix="/img">
+        <file>img/Base.png</file>
+        <file>img/Block.png</file>
+        <file>img/Bubble.png</file>
+        <file>img/BubbleMine.png</file>
+        <file>img/Card.png</file>
+        <file>img/Center2x2.png</file>
+        <file>img/Center4x4.png</file>
+        <file>img/CloseButton.png</file>
+        <file>img/CombineButton.png</file>
+        <file>img/Combiner.png</file>
+        <file>img/CombinerButton.png</file>
+        <file>img/Conveyor.png</file>
+        <file>img/ConveyorButton.png</file>
+        <file>img/ConveyorMark.png</file>
+        <file>img/ConveyorPut.png</file>
+        <file>img/ConveyorTurn.png</file>
+        <file>img/ConveyorTurnD.png</file>
+        <file>img/ConveyorTurnU.png</file>
+        <file>img/Eraser.png</file>
+        <file>img/Grid.png</file>
+        <file>img/infityButton.png</file>
+        <file>img/logo.png</file>
+        <file>img/Miner.png</file>
+        <file>img/MinerButton.png</file>
+        <file>img/newButton.png</file>
+        <file>img/PauseButton.png</file>
+        <file>img/PlayButton.png</file>
+        <file>img/Rect.png</file>
+        <file>img/RectMine.png</file>
+        <file>img/RoaterLeft.png</file>
+        <file>img/RoaterRight.png</file>
+        <file>img/RoaterRightButton.png</file>
+        <file>img/Round.png</file>
+        <file>img/RoundMine.png</file>
+        <file>img/Splitter.png</file>
+        <file>img/SplitterButton.png</file>
+        <file>img/startButton.png</file>
+        <file>img/StoreButton.png</file>
+        <file>img/TipsButton.png</file>
+        <file>img/ToolBar.png</file>
+        <file>img/Trash.png</file>
+        <file>img/TrashButton.png</file>
     </qresource>
 </RCC>

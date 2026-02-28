@@ -10,8 +10,12 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    center.cpp \
     config.cpp \
+    conveyor.cpp \
+    device.cpp \
     gamescene.cpp \
+    item.cpp \
     main.cpp \
     mainwindow.cpp \
     store.cpp \
@@ -20,8 +24,12 @@ SOURCES += \
     utils.cpp
 
 HEADERS += \
+    center.h \
     config.h \
+    conveyor.h \
+    device.h \
     gamescene.h \
+    item.h \
     mainwindow.h \
     store.h \
     toolbar.h \

@@ -6,7 +6,7 @@
 GameScene::GameScene(QWidget *parent)
     : QWidget{parent}, tools(this)
 {
-    setFixedSize(1440,864);
+    setFixedSize(1600,900);
     setWindowIcon(QIcon(":/res/icon.ico"));
     setWindowTitle("Shapez");
 
