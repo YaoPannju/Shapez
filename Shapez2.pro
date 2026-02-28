@@ -11,6 +11,7 @@ CONFIG += c++17
 
 SOURCES += \
     center.cpp \
+    combiner.cpp \
     config.cpp \
     conveyor.cpp \
     device.cpp \
@@ -25,6 +26,7 @@ SOURCES += \
 
 HEADERS += \
     center.h \
+    combiner.h \
     config.h \
     conveyor.h \
     device.h \
