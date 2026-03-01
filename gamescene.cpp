@@ -118,60 +118,9 @@ void GameScene::drawMap(QPainter &painter)
 void GameScene::load(QFile *loadFile){
     if(loadFile == nullptr){
         expandMap(true);
-    }else{
-        // savePath = QFileInfo(*loadFile).absoluteFilePath();
-
-        gridMap.clear();
-        QTextStream in(loadFile);
-        in>>BaseX>>BaseY;
-        in>>process>>reqCount>>proCount>>coin;
-        in>>mapGrade>>centerGrade>>itemGrade;
-        in>>conveyorGrade>>minerGrade>>splitterGrade;
-        expandMap(true, &in);
-
-        demands.clear();
-        int demandsLength = 0;
-        in>>demandsLength;
-        for(int i=0;i<demandsLength;++i){
-            int dx, dy;
-            in>>dx>>dy;
-            demands.append(QPair<int, int>(dx, dy));
-        }
-
-        loadFile->close();
     }
-    for(int y=0;y<HB;++y){
-        for(int x=0;x<WB;++x){
-            if(gridMap[y][x] <= 1 || !(gridMap[y][x]&1)) continue;
-            int tp = (gridMap[y][x]>>3)&0b1111;
-            switch(tp){
-            case 2:
-                new Conveyor(x, y, gridMap[y][x], nullptr);
-                break;
-            case 3:
-                new Miner(x, y, gridMap[y][x], nullptr);
-                break;
-            case 4:
-                new Splitter(x, y, gridMap[y][x], nullptr);
-                break;
-            case 5:
-                new Trash(x, y, gridMap[y][x], nullptr);
-                break;
-            case 6:
-                center = new Center(x, y, nullptr);
-                connect(center, &Center::finishSection, this, &GameScene::finishSection);
-                connect(center, &Center::finishSubsection, this, &GameScene::finishSubsection);
-                break;
-            case 7:
-                new Combiner(x, y, gridMap[y][x], nullptr);
-                break;
-            case 9:
-                new Rotator(x, y, gridMap[y][x], nullptr);
-                break;
-            default:
-                break;
-            }
-        }
+    else{
+        //等待实现
     }
 }
 
