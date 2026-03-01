@@ -10,7 +10,6 @@ class Item : public QObject
 {
     Q_OBJECT
 public:
-    //???
     double show;
     int rx, ry, type, rotation, proc;
     explicit Item(int rx, int ry, int type,

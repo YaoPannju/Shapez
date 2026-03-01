@@ -48,7 +48,25 @@ GameScene::GameScene(QWidget *parent)
         });
     });
 
+    store.hide();
+    connect(&store, &Store::upgradeMap, this, [=](){
+        this->expandMap();
+    });
+    connect(&store, &Store::upgradeCenter, this, [=](){
+        center->setSize(center->x, center->y, 4, 4);
+        center->wipeMap();
+        center->setMap();
+    });
+    connect(&store, &Store::resetStore, this, [=](){
+        emit resetToolButton(0);
+    });
+
     tools.move((width()-tools.width())/2, height()-PX-40);
+
+    connect(&tools, &ToolBar::put, this, &GameScene::put);
+    connect(&tools, &ToolBar::toggleStore, this, &GameScene::toggleStore);
+    connect(this, &GameScene::resetToolButton, &tools, &ToolBar::resetBtn);
+
     tools.show();
 
     setMouseTracking(true);
@@ -207,7 +225,12 @@ void GameScene::put(int type, int sx, int sy){
 
 void GameScene::toggleStore()
 {
-    //待实现
+    if(!store.partial || !store.isVisible()){
+        store.setVisible(!store.isVisible());
+    }
+    if(!store.isVisible()){
+        emit resetToolButton(0);
+    }
 }
 
 void GameScene::expandMap(bool init, QTextStream *in)

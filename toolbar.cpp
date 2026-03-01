@@ -11,10 +11,10 @@ ToolBar::ToolBar(QWidget *parent)
     setStyleSheet("QPushButton{ border: none; margin-top: 5px; }"
                   "QPushButton:hover { background-color: rgba(36, 173, 243, 50); border-radius: 10px 10px; }");
     for(int i=0;i<8;++i){
-        QPixmap pix(img[i]);
-        qDebug() << "图片路径：" << img[i]
-                 << " 是否加载失败：" << pix.isNull()
-                 << " 图片原始尺寸：" << pix.size();
+        // QPixmap pix(img[i]);
+        // qDebug() << "图片路径：" << img[i]
+        //          << " 是否加载失败：" << pix.isNull()
+        //          << " 图片原始尺寸：" << pix.size();
         tool[i].setInLayor(PX, PX, img[i], this);
         layout.addWidget(&tool[i]);
         if(i<7){

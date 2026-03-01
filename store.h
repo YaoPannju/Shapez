@@ -4,16 +4,33 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QLabel>
+
+#include "toolbutton.h"
+#include "config.h"
 
 class Store : public QWidget
 {
     Q_OBJECT
 public:
+    // 是否处于局部强化设置模式
+    bool partial;
+
+    QLabel title, money, grade[3], partialGrade[3];
+    QHBoxLayout shelf;
+    QVBoxLayout col[3];
+    ToolButton btn[3], close;
     explicit Store(QWidget *parent = nullptr);
 
-    QPushButton* ExitBtn, RF_CBtn, RF_VBtn, RF_MBtn;
+    void fresh();
+    void setPartial(bool p);
 
+private slots:
+    void paintEvent(QPaintEvent *event) override;
 signals:
+    void resetStore();
+    void upgradeMap();
+    void upgradeCenter();
     void store_closed();
 };
 

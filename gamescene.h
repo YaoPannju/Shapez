@@ -13,6 +13,7 @@
 #include "trash.h"
 #include "combiner.h"
 #include "eraser.h"
+#include "center.h"
 
 #include <QKeyEvent>
 #include <QWidget>
@@ -45,6 +46,9 @@ public:
 
     // 事件暂存
     QQueue<QEvent *>events;
+
+    // 存储中心
+    Center *center;
 
     // 更新计时
     qint64 lastUpdate, lastRender;
