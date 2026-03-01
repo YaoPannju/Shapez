@@ -19,6 +19,7 @@ SOURCES += \
     item.cpp \
     main.cpp \
     mainwindow.cpp \
+    miner.cpp \
     store.cpp \
     toolbar.cpp \
     toolbutton.cpp \
@@ -33,6 +34,7 @@ HEADERS += \
     gamescene.h \
     item.h \
     mainwindow.h \
+    miner.h \
     store.h \
     toolbar.h \
     toolbutton.h \

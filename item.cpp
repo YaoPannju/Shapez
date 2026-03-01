@@ -138,7 +138,7 @@ void Item::setRotation(int rot){
 bool Item::isMark(){
     return getDirType(3) == 4;
 }
-//???
+
 Item* Item::markType(int rx, int ry, QObject* parent){
     return new Item(rx, ry, 0b000000000000001000, parent);
 }
