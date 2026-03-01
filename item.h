@@ -12,7 +12,6 @@ class Item : public QObject
 public:
     //???
     double show;
-    //???
     int rx, ry, type, rotation, proc;
     explicit Item(int rx, int ry, int type,
                   QObject *parent = nullptr); // 传入的是像素 x, y

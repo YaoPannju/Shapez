@@ -6,7 +6,15 @@
 #include "device.h"
 #include "config.h"
 #include "store.h"
+#include "conveyor.h"
+#include "splitter.h"
+#include "rotator.h"
+#include "miner.h"
+#include "trash.h"
+#include "combiner.h"
+#include "eraser.h"
 
+#include <QKeyEvent>
 #include <QWidget>
 #include <QMediaPlayer>
 #include <QAudioOutput>
@@ -21,6 +29,8 @@ class GameScene : public QWidget
 public:
     explicit GameScene(QWidget *parent = nullptr);
 
+    ~GameScene();
+
     void loadGame(const QString& filename);
 
     void save(); // 保存进度
@@ -31,15 +41,16 @@ public:
     // 设置背景音乐和图片
     void setBack();
 
-    void paintEvent(QPaintEvent *);
-
-    void play();
+    void paintEvent(QPaintEvent *) override;
 
     // 事件暂存
     QQueue<QEvent *>events;
 
     // 更新计时
     qint64 lastUpdate, lastRender;
+
+    inline int min(int x, int y){return x>y?y:x;}
+    inline int max(int x, int y){return x>y?x:y;}
 
 private:
     // 全局计时
@@ -53,12 +64,14 @@ private:
     QAudioOutput *audioOutput;
     QString background;
 
+    int putType;
 
+    QList<Conveyor *> putConveyor;
 
     // 工具栏
     ToolBar tools;
 
-    Store *store;
+    Store store;
 
     //待放置的物品类型，0则是没有
     int things2put;
@@ -75,9 +88,29 @@ private:
     Device *putting;
 
     QTimer timer;
+private slots:
+    // 游戏主循环
+    void play();
+public slots:
+    // 拖曳放置
+    void put(int type, int sx, int sy);
+    // 开关商店
+    void toggleStore();
+    // 根据等级扩展地图
+    void expandMap(bool init = false, QTextStream *in = nullptr);
+    // 完成部分
+    void finishSubsection();
+    void finishSection();
+private:
+    void keyPressEvent(QKeyEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    //void resizeEvent(QResizeEvent *event) override;
 
 signals:
     void RTM_signal();
+    void resetToolButton(int id);
 };
 
 #endif // GAMESCENE_H

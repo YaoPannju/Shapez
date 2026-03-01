@@ -15,14 +15,18 @@ SOURCES += \
     config.cpp \
     conveyor.cpp \
     device.cpp \
+    eraser.cpp \
     gamescene.cpp \
     item.cpp \
     main.cpp \
     mainwindow.cpp \
     miner.cpp \
+    rotator.cpp \
+    splitter.cpp \
     store.cpp \
     toolbar.cpp \
     toolbutton.cpp \
+    trash.cpp \
     utils.cpp
 
 HEADERS += \
@@ -31,13 +35,17 @@ HEADERS += \
     config.h \
     conveyor.h \
     device.h \
+    eraser.h \
     gamescene.h \
     item.h \
     mainwindow.h \
     miner.h \
+    rotator.h \
+    splitter.h \
     store.h \
     toolbar.h \
     toolbutton.h \
+    trash.h \
     utils.h
 
 FORMS += \

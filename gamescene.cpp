@@ -2,9 +2,10 @@
 
 #include <QPushButton>
 #include <QSoundEffect>
+#include <QDateTime>
 
 GameScene::GameScene(QWidget *parent)
-    : QWidget{parent}, tools(this)
+    : QWidget{parent}, tools(this), store(this)
 {
     setFixedSize(1600,900);
     setWindowIcon(QIcon(":/res/icon.ico"));
@@ -16,8 +17,6 @@ GameScene::GameScene(QWidget *parent)
     player->setSource(QUrl("qrc:/res/feather.mp3"));
     audioOutput->setVolume(0.3);
     player->play();
-
-    store = new Store(this);
 
     pause = false;
     onDrag = false;
@@ -43,8 +42,8 @@ GameScene::GameScene(QWidget *parent)
         clickSound.setVolume(0.5);
         clickSound.play();
         //this->hide();
-        store->show();
-        connect(store, &Store::store_closed, this, [=](){
+        store.show();
+        connect(&store, &Store::store_closed, this, [=](){
             this->pause = false;
         });
     });
@@ -59,22 +58,30 @@ GameScene::GameScene(QWidget *parent)
     connect(&timer, &QTimer::timeout, this, &GameScene::play);
 }
 
+GameScene::~GameScene(){
+    save();//待实现
+    for(auto &dev:devices){
+        delete dev;
+        dev = nullptr;
+    }
+}
+
 void GameScene::loadGame(const QString &filename)
 {
     //qDebug()<<"Load File";
     return;
 }
 
+void GameScene::save()
+{
+    qDebug()<<"Game Process Saved!";
+    //待实现
+}
+
 void GameScene::start()
 {
     timer.setInterval(0);
     timer.start();
-}
-
-bool GameScene::checkPut()
-{
-    if(things2put == 0) return false;
-    return true;
 }
 
 void GameScene::drawMap(QPainter &painter)
@@ -100,6 +107,576 @@ void GameScene::paintEvent(QPaintEvent *)
 
 void GameScene::play()
 {
-    //游戏的逻辑
-    qDebug()<<"666";
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
+    qint64 deltaUpdate = now - lastUpdate;
+    qint64 deltaRender = now - lastRender;
+
+    // 更新游戏逻辑
+    if(deltaUpdate >= 16){
+        flip ++;
+        lastUpdate = now;
+        if(!pause && !store.isVisible()){
+            // 更新游戏逻辑
+            for(auto &it:devices){
+                if(it->virt) continue;
+                it->update(flip);
+            }
+        }
+    }
+
+    // if(reverse)qDebug()<<"reverse is true";
+    // else qDebug()<<"reverse is false";
+
+    // 更新渲染逻辑
+    if(deltaRender >= 16){
+        lastRender = now;
+        update();
+    }
+}
+
+void GameScene::put(int type, int sx, int sy){
+    if(putType != 0){
+        // 如果点击某一个按钮时，已经处于 putType 状态
+        if(putType == 2){
+            if(putConveyor.size()>0){
+                for(auto &con:putConveyor){
+                    delete con;
+                }
+                putConveyor.clear();
+            }
+        }else{
+            if(putting != nullptr){
+                delete putting;
+                putting = nullptr;
+            }
+        }
+        // 如果重复点击的同一个按钮，则代表取消放置状态
+        if(putType == type){
+            emit resetToolButton(putType);
+            putType = 0;
+            return ;
+        }else{
+            // 否则正常进行（切换按钮）
+            emit resetToolButton(putType);
+        }
+    }
+
+    putType = type;
+    sx = (sx-BaseX)/PX; sy = (sy-BaseY)/PX;
+    if(sx<0||sx>=WB||sy<0||sy>HB) return ;
+    if(putType == 2){
+        conveyorDown = false;
+        putConveyor.append(
+            new Conveyor(sx, sy, 0b100010001, nullptr, true));
+    }else{
+        switch(putType){
+        case 3:
+            // Miner
+            putting = new Miner(sx, sy, 0b0011001, nullptr, true);
+            break;
+        case 4:
+            // Splitter
+            putting = new Splitter(sx, sy, 0b0100001, nullptr, true);
+            break;
+        case 5:
+            // Trash
+            putting = new Trash(sx, sy, 0b0101001, nullptr, true);
+            break;
+        case 7:
+            // Combiner
+            putting = new Combiner(sx, sy, 0b0111001, nullptr, true);
+            break;
+        case 8:
+            // Eraser
+            putting = new Eraser(sx, sy, 0b1000001, nullptr, true);
+            break;
+        case 9:
+            // RightRotater
+            putting = new Rotator(sx, sy, 0b1001001, nullptr, true);
+            break;
+        default:
+            putType = 0;
+            putting = nullptr;
+            break;
+        }
+        if(putType == 8){
+            mouseDown = false;
+        }
+    }
+}
+
+void GameScene::toggleStore()
+{
+    //待实现
+}
+
+void GameScene::expandMap(bool init, QTextStream *in)
+{
+    //待实现
+}
+
+void GameScene::finishSubsection()
+{
+    //待实现
+}
+
+void GameScene::finishSection()
+{
+    //待实现
+}
+
+void GameScene::mouseMoveEvent(QMouseEvent *event){
+    QPointF pos = event->position();
+    int nx = ((int)(pos.x()-BaseX)/PX), ny = ((int)(pos.y()-BaseY)/PX);
+    nx = qMax(0, qMin(nx, WB-1)); ny = qMax(0, qMin(ny, HB-1));
+
+    if(onDrag){
+        BaseX = min(max(width()-WB*PX, startBaseX+pos.x()-dragX), 0);
+        BaseY = min(max(height()-HB*PX, startBaseY+pos.y()-dragY), 0);
+        return ;
+    }
+    if(putType == 0) return ;
+    if(putType == 2){
+        if(!conveyorDown){
+            auto con = putConveyor.front();
+            con->x = nx;
+            con->y = ny;
+            con->setSelect(true, true);
+            if(checkPut()){
+                con->setSelectColor(0);
+            }
+            else con->setSelectColor(1);
+        }
+        else{
+            Conveyor *last = putConveyor.last();
+            int lx = last->x, ly = last->y;
+            if(lx == nx && ly == ny){
+                // 原位则不作任何操作
+            }
+            else{
+                QList<QPair<int, int>> points;
+                if(nx >= lx){
+                    for(int i=lx+1;i<=nx;++i){
+                        points.push_back(QPair<int, int>(i, ly));
+                    }
+                }else{
+                    for(int i=lx-1;i>=nx;--i){
+                        points.push_back(QPair<int, int>(i, ly));
+                    }
+                }
+                if(ny >= ly){
+                    for(int i=ly+1;i<=ny;++i){
+                        points.push_back(QPair<int, int>(nx, i));
+                    }
+                }else{
+                    for(int i=ly-1;i>=ny;--i){
+                        points.push_back(QPair<int, int>(nx, i));
+                    }
+                }
+
+                // 进行路径循环
+                for(auto &point:points){
+                    int px = point.first, py = point.second;
+
+                    // 是否存在重复的情况
+                    Conveyor *cyc = nullptr;
+                    for(auto &con:putConveyor){
+                        if(con->x == px && con->y == py){
+                            cyc = con; break;
+                        }
+                    }
+                    if(gridMap[py][px] != 0 || cyc != nullptr){
+                        if(putConveyor.size()>=2 &&
+                            putConveyor.lastIndexOf(cyc) == putConveyor.size()-2){
+                            delete last;
+                            putConveyor.removeLast();
+                        }else{
+                            // 根据鼠标移动方向设置最后出去的方向
+                            if(px == lx+1 && py == ly){
+                                if(reverse){
+                                    last->setFrom(1);
+                                }
+                                else last->setTo(1);
+                            }else if(px == lx && py == ly+1){
+                                if(reverse){
+                                    last->setFrom(2);
+                                }
+                                else last->setTo(2);
+                            }else if(px == lx-1 && py == ly){
+                                if(reverse){
+                                    last->setFrom(3);
+                                }else last->setTo(3);
+                            }else if(px == lx && py == ly-1){
+                                if(reverse){
+                                    last->setFrom(0);
+                                }
+                                else last->setTo(0);
+                            }
+                        }
+                        break;
+                    }else{
+                        // 正常连线
+                        if(exist && putConveyor.size() == 1){
+                            reverse = false;
+                        }
+
+                        bool flag = false;
+                        Conveyor *next = new Conveyor(
+                            px, py, last->type, nullptr, true);
+                        next->setSelect(true, true);
+                        if(px == lx+1 && py == ly){
+                            if(last->getFrom() == 1){
+                                if(exist){
+                                    reverse = true;
+                                }
+                                else last->swapDirect();
+                            }
+                            else{
+                                if(reverse){
+                                    last->setFrom(1);
+                                }
+                                else last->setTo(1);
+                            }
+
+                            if(reverse){
+                                next->setFrom(1);
+                                next->setTo(3);
+                            }else{
+                                next->setFrom(3);
+                                next->setTo(1);
+                            }
+                            flag = true;
+                        }else if(px == lx && py == ly+1){
+                            if(last->getFrom() == 2){
+                                if(exist){
+                                    reverse = true;
+                                }else last->swapDirect();
+                            }else{
+                                if(reverse){
+                                    last->setFrom(2);
+                                }else last->setTo(2);
+                            }
+
+                            if(reverse){
+                                next->setFrom(2);
+                                next->setTo(0);
+                            }else{
+                                next->setFrom(0);
+                                next->setTo(2);
+                            }
+                            flag = true;
+                        }else if(px == lx-1 && py == ly){
+                            if(last->getFrom() == 3){
+                                if(exist){
+                                    reverse = true;
+                                }
+                                else last->swapDirect();
+                            }
+                            else{
+                                if(reverse){
+                                    last->setFrom(3);
+                                }
+                                else last->setTo(3);
+                            }
+
+                            if(reverse){
+                                next->setFrom(3);
+                                next->setTo(1);
+                            }else{
+                                next->setFrom(1);
+                                next->setTo(3);
+                            }
+                            flag = true;
+                        }else if(px == lx && py == ly-1){
+                            if(last->getFrom() == 0){
+                                if(exist){
+                                    reverse = true;
+                                }else last->swapDirect();
+                            }else{
+                                if(reverse){
+                                    last->setFrom(0);
+                                }else last->setTo(0);
+                            }
+
+                            if(reverse){
+                                next->setFrom(0);
+                                next->setTo(2);
+                            }else{
+                                next->setFrom(2);
+                                next->setTo(0);
+                            }
+                            flag = true;
+                        }
+
+                        if(flag){
+                            putConveyor.append(next);
+                            last = next;
+                            lx = px; ly = py;
+                        }else{
+                            delete next;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }else if(putType == 8){
+        putting->setPos(nx, ny, false);
+        putting->setSelect(true, true);
+        if(mouseDown){
+            if(nx>=0&&nx<WB&&ny>=0&&HB){
+                auto it = devicesMap.find(QPair<int, int>(nx, ny));
+                if(it != devicesMap.end()){
+                    if(it.value()->getDeviceType()==2){
+                        delete it.value();
+                        putting->setSelectColor(0);
+                    }else putting->setSelectColor(1);
+                }else{
+                    if(gridMap[ny][nx] != 0){
+                        putting->setSelectColor(1);
+                    }else putting->setSelectColor(0);
+                }
+            }
+        }else putting->setSelectColor(1);
+    }else{
+        putting->setPos(nx, ny, false);
+        putting->setSelect(true, true);
+        if(checkPut()){
+            putting->setSelectColor(0);
+        }else putting->setSelectColor(1);
+    }
+}
+bool GameScene::checkPut(){
+    if(putType == 0) return false;
+
+    if(putType == 2){
+        for(auto &dev:putConveyor){
+            int putX = dev->x, putY = dev->y;
+            if(gridMap[putY][putX] != 0){
+                return false;
+            }else if(!dev->valid()){
+                return false;
+            }
+        }
+        return true;
+    }else{
+        int putX = putting->x, putY = putting->y;
+        if(putType == 3){
+            // 采矿机需要放在有矿的地方
+            if(gridMap[putY][putX] != 0 && !(gridMap[putY][putX]&1)){
+                return true;
+            }else return false;
+        }else{
+            bool puttable = true;
+            for(int dy=0;dy<putting->h;++dy){
+                for(int dx=0;dx<putting->w;++dx){
+                    if(gridMap[putY+dy][putX+dx] != 0){
+                        puttable = false; break;
+                    }
+                }
+            }
+            if(!puttable){
+                return false;
+            }else return true;
+        }
+    }
+}
+void GameScene::keyPressEvent(QKeyEvent *event){
+    if(putType == 0) return ;
+    if(putType != 2){
+        switch(event->key()){
+        case Qt::Key_W:
+            // 向上
+            putting->setDirect(0, false);
+            break;
+        case Qt::Key_D:
+            // 向右
+            putting->setDirect(1, false);
+            break;
+        case Qt::Key_S:
+            // 向下
+            putting->setDirect(2, false);
+            break;
+        case Qt::Key_A:
+            // 向左
+            putting->setDirect(3, false);
+            break;
+        default:
+            break;
+        }
+        if(checkPut()){
+            putting->setSelectColor(0);
+        }else putting->setSelectColor(1);
+    }
+    else if(putConveyor.size() == 1){
+        auto pt = putConveyor.front();
+        switch(event->key()){
+        case Qt::Key_W:
+            // 向上
+            pt->setDirect(2, 0, false);
+            break;
+        case Qt::Key_D:
+            // 向右
+            pt->setDirect(3, 1, false);
+            break;
+        case Qt::Key_S:
+            // 向下
+            pt->setDirect(0, 2, false);
+            break;
+        case Qt::Key_A:
+            // 向左
+            pt->setDirect(1, 3, false);
+            break;
+        default:
+            break;
+        }
+        if(checkPut()){
+            pt->setSelectColor(0);
+        }else pt->setSelectColor(1);
+    }
+}
+void GameScene::mousePressEvent(QMouseEvent *event){
+    if(event->button() == Qt::LeftButton){ // 左键选中或确认放置
+        if(putType == 0){
+            Device *newSelect = nullptr;
+            QPointF pos = event->position();
+            int nx = ((int)(pos.x())-BaseX)/PX;
+            int ny = ((int)(pos.y())-BaseY)/PX;
+            if(nx>=0&&nx<WB&&ny>=0&&HB){
+                auto it = devicesMap.find(QPair<int, int>(nx, ny));
+                if(it != devicesMap.end()){
+                    newSelect = *it;
+                }
+            }
+            if(newSelect != nullptr){
+                if(select != nullptr && select != newSelect){
+                    select->setSelect(false);
+                }
+                if(select != newSelect){
+                    select = newSelect;
+                    int type = newSelect->getDeviceType();
+                    if(type == 2){
+                        // 按下传送带代表拖曳开始
+                        auto con = (Conveyor *)select;
+                        putType = 2; conveyorDown = true;
+                        exist = true; reverse = false;
+                        con->setVirt(true);
+                        con->setSelectColor(0);
+                        con->setSelect(true, true);
+                        putConveyor.append(con);
+                        select = nullptr;
+                    }else select->setSelect(true);
+                }
+            }else{
+                if(select != nullptr){
+                    select->setSelect(false);
+                    select = nullptr;
+                }
+                onDrag = true;
+                dragX = pos.x(); dragY = pos.y();
+                startBaseX = BaseX; startBaseY = BaseY;
+                // qWarning()<<"start drag"<<dragX<<dragY;
+            }
+        }else{
+            if(putType == 2){
+                if(!conveyorDown){
+                    conveyorDown = true;
+                    exist = false; reverse = false;
+                }
+            }
+            else if(putType == 8){
+                mouseDown = true;
+            }
+            else{
+                if(checkPut()){
+                    // 放置非传送带类元素
+                    if(putType == 3){
+                        // 给采矿机赋值对应的矿
+                        int type = putting->type;
+                        int putX = putting->x, putY = putting->y;
+                        putting->type = (gridMap[putY][putX]<<7)|(type & 0b1111111);
+                    }
+                    putting->setVirt(false);
+                    putting->setSelect(false, true);
+                    putting->setPos(putting->x, putting->y);
+                    putting = nullptr;
+                }else{
+                    delete putting;
+                    putting = nullptr;
+                }
+                emit resetToolButton(putType);
+                putType = 0;
+            }
+        }
+    }else if(event->button() == Qt::RightButton){
+        if(putType != 0){
+            // 取消放置
+            if(putType == 2){
+                for(auto &con:putConveyor){
+                    delete con;
+                }
+                putConveyor.clear();
+            }else{
+                delete putting;
+                putting = nullptr;
+            }
+            emit resetToolButton(putType);
+            putType = 0;
+        }else{
+            Device *newSelect = nullptr;
+            QPointF pos = event->position();
+            int nx = ((int)(pos.x())-BaseX)/PX;
+            int ny = ((int)(pos.y())-BaseY)/PX;
+            if(nx>=0&&nx<WB&&ny>=0&&HB){
+                auto it = devicesMap.find(QPair<int, int>(nx, ny));
+                if(it != devicesMap.end()){
+                    newSelect = *it;
+                }
+            }
+            if(newSelect != nullptr){
+                int type = (newSelect->type >> 3) & 0b1111;
+                if(type == 0b0011){
+                    // 采矿机还原成矿
+                    int typ = newSelect->type>>7;
+                    int nx = newSelect->x, ny = newSelect->y;
+                    delete newSelect;
+                    gridMap[ny][nx] = typ;
+                }else if(type == 0b0110){
+                    // 交付中心不可删除
+                }else{
+                    // 其他设备直接删除
+                    delete newSelect;
+                }
+            }
+        }
+    }
+}
+void GameScene::mouseReleaseEvent(QMouseEvent *event){
+    if(event->button() == Qt::LeftButton){ // 左键选中或确认放置
+        if(onDrag){
+            onDrag = false;
+            return ;
+        }
+        if(putType == 2 && conveyorDown){
+            if(checkPut()){
+                // 放置传送带类元素
+                for(auto &dev:putConveyor){
+                    dev->setVirt(false);
+                    dev->setSelect(false, true);
+                    dev->setPos(dev->x, dev->y, false);
+                }
+                putConveyor.clear();
+            }else{
+                for(auto &dev:putConveyor){
+                    delete dev;
+                }
+                putConveyor.clear();
+            }
+            emit resetToolButton(putType);
+            putType = 0;
+            conveyorDown = false;
+        }else if(putType == 8){
+            mouseDown = false;
+        }
+    }
 }
