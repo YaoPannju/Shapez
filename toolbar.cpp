@@ -1,10 +1,8 @@
 #include "toolbar.h"
 
-#include <QPushButton>
-
 ToolBar::ToolBar(QWidget *parent)
     : QWidget{parent},
-    img({":/res/building_icons/miner.png", ":/res/building_icons/belt.png", ":/res/building_icons/cutter.png", ":/res/building_icons/stacker.png", ":/res/building_icons/rotator.png", ":/res/building_icons/trash.png", ":/res/building_icons/Eraser.png", ":/res/building_icons/storage.png"}), layout(this),
+    img({MINER_BTN, CONVEYOR_BTN, SPLITTER_BTN, COMBINER_BTN, RIGHT_ROTATE_BTN, TRASH_BTN, ERASER_BTN, STORE_BTN}), layout(this),
     types({3, 2, 4, 7, 9, 5, 8, 0}),
     pressStyle("border-radius: 10px; background-color: rgba(36, 173, 243, 127);"),
     normalStyle("background-color: transparent;")
@@ -13,6 +11,10 @@ ToolBar::ToolBar(QWidget *parent)
     setStyleSheet("QPushButton{ border: none; margin-top: 5px; }"
                   "QPushButton:hover { background-color: rgba(36, 173, 243, 50); border-radius: 10px 10px; }");
     for(int i=0;i<8;++i){
+        QPixmap pix(img[i]);
+        qDebug() << "图片路径：" << img[i]
+                 << " 是否加载失败：" << pix.isNull()
+                 << " 图片原始尺寸：" << pix.size();
         tool[i].setInLayor(PX, PX, img[i], this);
         layout.addWidget(&tool[i]);
         if(i<7){
@@ -41,6 +43,7 @@ void ToolBar::paintEvent(QPaintEvent *){
 }
 
 void ToolBar::resetBtn(int id){
+    // 将 type 转化回 button id
     for(int i=0;i<8;++i){
         if(types[i] == id){
             id = i; break;

@@ -1,9 +1,9 @@
 #ifndef TOOLBUTTON_H
 #define TOOLBUTTON_H
 
-#include <QToolButton>
+#include <QPushButton>
 
-class ToolButton : public QToolButton
+class ToolButton : public QPushButton
 {
 public:
     ToolButton();
