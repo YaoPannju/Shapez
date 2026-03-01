@@ -56,6 +56,8 @@ public:
     inline int min(int x, int y){return x>y?y:x;}
     inline int max(int x, int y){return x>y?x:y;}
 
+    void load(QFile *loadFile);
+
 private:
     // 全局计时
     unsigned long long flip;

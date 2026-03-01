@@ -4,8 +4,11 @@
 #include <QSoundEffect>
 #include <QDateTime>
 
+#include <QFile>
+
 GameScene::GameScene(QWidget *parent)
-    : QWidget{parent}, tools(this), store(this)
+    : QWidget{parent}, tools(this), store(this), putting(nullptr), putType(0), center(nullptr),
+    lastUpdate(0), lastRender(0)
 {
     setFixedSize(1600,900);
     setWindowIcon(QIcon(":/res/icon.ico"));
@@ -110,6 +113,66 @@ void GameScene::drawMap(QPainter &painter)
         );
 
     return;
+}
+
+void GameScene::load(QFile *loadFile){
+    if(loadFile == nullptr){
+        expandMap(true);
+    }else{
+        // savePath = QFileInfo(*loadFile).absoluteFilePath();
+
+        gridMap.clear();
+        QTextStream in(loadFile);
+        in>>BaseX>>BaseY;
+        in>>process>>reqCount>>proCount>>coin;
+        in>>mapGrade>>centerGrade>>itemGrade;
+        in>>conveyorGrade>>minerGrade>>splitterGrade;
+        expandMap(true, &in);
+
+        demands.clear();
+        int demandsLength = 0;
+        in>>demandsLength;
+        for(int i=0;i<demandsLength;++i){
+            int dx, dy;
+            in>>dx>>dy;
+            demands.append(QPair<int, int>(dx, dy));
+        }
+
+        loadFile->close();
+    }
+    for(int y=0;y<HB;++y){
+        for(int x=0;x<WB;++x){
+            if(gridMap[y][x] <= 1 || !(gridMap[y][x]&1)) continue;
+            int tp = (gridMap[y][x]>>3)&0b1111;
+            switch(tp){
+            case 2:
+                new Conveyor(x, y, gridMap[y][x], nullptr);
+                break;
+            case 3:
+                new Miner(x, y, gridMap[y][x], nullptr);
+                break;
+            case 4:
+                new Splitter(x, y, gridMap[y][x], nullptr);
+                break;
+            case 5:
+                new Trash(x, y, gridMap[y][x], nullptr);
+                break;
+            case 6:
+                center = new Center(x, y, nullptr);
+                connect(center, &Center::finishSection, this, &GameScene::finishSection);
+                connect(center, &Center::finishSubsection, this, &GameScene::finishSubsection);
+                break;
+            case 7:
+                new Combiner(x, y, gridMap[y][x], nullptr);
+                break;
+            case 9:
+                new Rotator(x, y, gridMap[y][x], nullptr);
+                break;
+            default:
+                break;
+            }
+        }
+    }
 }
 
 void GameScene::paintEvent(QPaintEvent *)
@@ -235,7 +298,32 @@ void GameScene::toggleStore()
 
 void GameScene::expandMap(bool init, QTextStream *in)
 {
-    //待实现
+    int SW = WB, SH = HB;
+    WB = mapSize[mapGrade][0];
+    HB = mapSize[mapGrade][1];
+    gridMap.resize(HB);
+    for(int y=0;y<HB;++y){
+        gridMap[y].resize(WB);
+        if(init){
+            if(in == nullptr){
+                for(int x=0;x<WB;++x){
+                    gridMap[y][x] = baseGridMap[y][x];
+                }
+            }else{
+                for(int x=0;x<WB;++x){
+                    (*in)>>gridMap[y][x];
+                }
+            }
+        }else if(y>=SH){
+            for(int x=0;x<WB;++x){
+                gridMap[y][x] = baseGridMap[y][x];
+            }
+        }else{
+            for(int x=SW;x<WB;++x){
+                gridMap[y][x] = baseGridMap[y][x];
+            }
+        }
+    }
 }
 
 void GameScene::finishSubsection()
@@ -461,7 +549,8 @@ void GameScene::mouseMoveEvent(QMouseEvent *event){
                 }
             }
         }else putting->setSelectColor(1);
-    }else{
+    }
+    else{
         putting->setPos(nx, ny, false);
         putting->setSelect(true, true);
         if(checkPut()){

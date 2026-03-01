@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
                 gamescene = nullptr;
                 qDebug() << "当前在主界面";
             });
+            gamescene->load(nullptr);
             gamescene->start();
             gamescene->show();
             qDebug() << "当前在游戏界面";
