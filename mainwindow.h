@@ -39,5 +39,7 @@ private:
     void paintEvent(QPaintEvent *);
 
     void loadGameAndSwitchToGameScene(const QString& filename);
+
+    void resizeEvent(QResizeEvent *event) override;
 };
 #endif // MAINWINDOW_H

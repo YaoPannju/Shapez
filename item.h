@@ -52,4 +52,6 @@ public:
 signals:
 };
 
+extern QList<Item *> items;
+
 #endif // ITEM_H

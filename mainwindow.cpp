@@ -13,7 +13,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    setFixedSize(1600,900);
+    gamescene = new GameScene();
+
+    setFixedSize(1600,960);
     setWindowIcon(QIcon(":/res/icon.ico"));
     setWindowTitle("Shapez");
 
@@ -41,7 +43,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     BtnClickAnimation(newbtn, [this]() {
         QTimer::singleShot(500, this, [=](){
-            gamescene = new GameScene;
             player->pause();
             this->hide();
             gamescene->setGeometry(this->geometry());
@@ -153,4 +154,8 @@ void MainWindow::loadGameAndSwitchToGameScene(const QString &filename)
         player->play();
         gamescene = nullptr;
     });
+}
+
+void MainWindow::resizeEvent(QResizeEvent *){
+    //gamescene->resize(size());
 }

@@ -7,10 +7,10 @@
 #include <QFile>
 
 GameScene::GameScene(QWidget *parent)
-    : QWidget{parent}, tools(this), store(this), putting(nullptr), putType(0), center(nullptr),
+    : QWidget{parent}, tools(this), store(this), putting(nullptr), putType(0), center(nullptr), select(nullptr),
     lastUpdate(0), lastRender(0)
 {
-    setFixedSize(1600,900);
+    setFixedSize(1600,960);
     setWindowIcon(QIcon(":/res/icon.ico"));
     setWindowTitle("Shapez");
 
@@ -109,8 +109,51 @@ void GameScene::drawMap(QPainter &painter)
 {
     painter.drawPixmap(
         QRect(BaseX%PX, BaseY%PX, WW+PX*2, WH+PX*2),
-        QPixmap(":/res/Grid.png")
+        QPixmap(GRID_IMG)
         );
+    qDebug()<<"BaseX % PX = "<<BaseX%PX;
+    qDebug()<<"BaseY % PX = "<<BaseY%PX;
+
+    if(width() > WB*PX || height() > HB*PX){
+        QPen pen(QColor(238, 151, 12, 200));
+        pen.setWidth(4);
+        painter.setPen(pen);
+        if(width() > WB*PX){
+            painter.drawLine(WB*PX, 0, WB*PX, HB*PX);
+        }
+        if(height() > HB*PX){
+            painter.drawLine(0, HB*PX, WB*PX, HB*PX);
+        }
+    }
+
+    for(int y=0;y<HB;++y){
+        for(int x=0;x<WB;++x){
+            if(gridMap[y][x]!=1 && (gridMap[y][x]&1)) continue;
+            if(gridMap[y][x] == 1){
+                painter.drawPixmap(
+                    QRect(BaseX+x*PX+MA, BaseY+y*PX+MA, PX-MA*2, PX-MA*2),
+                    QPixmap(BLOCK_IMG)
+                    );
+                qDebug()<<BaseX+x*PX<<" "<<BaseY+y*PX<<" "<<PX-MA*2;
+            }else if((gridMap[y][x]>>1&0b1111) == 1){
+                painter.drawPixmap(
+                    QRect(BaseX+x*PX+MA, BaseY+y*PX+MA, PX-MA*2, PX-MA*2),
+                    QPixmap(ROUND_MINE_IMG)
+                    );
+            }else if((gridMap[y][x]>>1&0b1111) == 2){
+                painter.drawPixmap(
+                    QRect(BaseX+x*PX+MA, BaseY+y*PX+MA, PX-MA*2, PX-MA*2),
+                    QPixmap(RECT_MINE_IMG)
+                    );
+            }else if((gridMap[y][x]>>1&0b1111) == 3){
+                painter.drawPixmap(
+                    QRect(BaseX+x*PX+MA, BaseY+y*PX+MA, PX-MA*2, PX-MA*2),
+                    QPixmap(BUBBLE_MINE_IMG)
+                    );
+            }
+        }
+    }
+    painter.save();
 
     return;
 }
@@ -126,11 +169,40 @@ void GameScene::load(QFile *loadFile){
 
 void GameScene::paintEvent(QPaintEvent *)
 {
+    // QPainter painter(this);
+
+    // painter.drawPixmap(QRect(0,0,1440,864), QPixmap(":/res/bg2.png"));
+
+    // drawMap(painter);
+
+    // painter.end();
     QPainter painter(this);
 
-    painter.drawPixmap(QRect(0,0,1440,864), QPixmap(":/res/bg2.png"));
+    painter.drawPixmap(QRect(0,0,1600,960), QPixmap(":/res/bg2.png"));
 
     drawMap(painter);
+    for(auto &it:devices){
+        int typ = ((it->type >> 3) & 0b1111);
+        if(typ!=2){
+            continue;
+        }else it->draw(painter);
+    }
+    for(auto &item:items){
+        if(item->isMark()){
+            item->draw(painter);
+        }
+    }
+    for(auto &item:items){
+        if(!item->isMark()){
+            item->draw(painter);
+        }
+    }
+    for(auto &it:devices){
+        int typ = ((it->type >> 3) & 0b1111);
+        if(typ==2){
+            continue;
+        }else it->draw(painter);
+    }
 
     painter.end();
 }
@@ -156,6 +228,10 @@ void GameScene::play()
 
     // if(reverse)qDebug()<<"reverse is true";
     // else qDebug()<<"reverse is false";
+    qDebug()<<"BaseX = "<<BaseX;
+    qDebug()<<"BaseY = "<<BaseY;
+
+    qDebug() << "窗口高度：" << height() << " 纵向可显示格子数：" << height()/PX;
 
     // 更新渲染逻辑
     if(deltaRender >= 16){
@@ -628,7 +704,8 @@ void GameScene::mousePressEvent(QMouseEvent *event){
                         select = nullptr;
                     }else select->setSelect(true);
                 }
-            }else{
+            }
+            else{
                 if(select != nullptr){
                     select->setSelect(false);
                     select = nullptr;
@@ -636,7 +713,6 @@ void GameScene::mousePressEvent(QMouseEvent *event){
                 onDrag = true;
                 dragX = pos.x(); dragY = pos.y();
                 startBaseX = BaseX; startBaseY = BaseY;
-                // qWarning()<<"start drag"<<dragX<<dragY;
             }
         }else{
             if(putType == 2){
@@ -740,4 +816,18 @@ void GameScene::mouseReleaseEvent(QMouseEvent *event){
             mouseDown = false;
         }
     }
+}
+
+void GameScene::resizeEvent(QResizeEvent *event)
+{
+    // pauseBtn.setPos(width()-PX*2, 0);
+    // tools.move((width()-tools.width())/2, height()-PX-40);
+    // store.move((width()-store.width())/2, (height()-store.height())/2-20);
+
+    // if(width() > WB*PX){
+    //     BaseX = 0;
+    // }else BaseX = max(width()-WB*PX, BaseX);
+    // if(height() > HB*PX){
+    //     BaseY = 0;
+    // }else BaseY = max(height()-HB*PX, BaseY);
 }

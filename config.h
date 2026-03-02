@@ -5,11 +5,10 @@
 
 //窗口长宽
 #define WW 1600
-#define WH 900
+#define WH 960
 //格子大小
 #define PX 80
 
-//？？？
 #define MA 4
 
 // 格子数
