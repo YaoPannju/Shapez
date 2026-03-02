@@ -30,6 +30,8 @@ class GameScene : public QWidget
 public:
     explicit GameScene(QWidget *parent = nullptr);
 
+    QMediaPlayer *player;
+
     ~GameScene();
 
     void loadGame(const QString& filename);
@@ -66,7 +68,6 @@ private:
     ToolButton pauseBtn, storeBtn;
 
     // 背景音乐播放器、背景图片路径
-    QMediaPlayer *player;
     QAudioOutput *audioOutput;
     QString background;
 

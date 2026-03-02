@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     gamescene = new GameScene();
+    (gamescene->player)->pause();
 
     setFixedSize(1600,960);
     setWindowIcon(QIcon(":/res/icon.ico"));
@@ -56,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent)
             gamescene->load(nullptr);
             gamescene->start();
             gamescene->show();
+            (gamescene->player)->play();
             qDebug() << "当前在游戏界面";
         });
     }, 100);

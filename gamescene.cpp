@@ -111,8 +111,8 @@ void GameScene::drawMap(QPainter &painter)
         QRect(BaseX%PX, BaseY%PX, WW+PX*2, WH+PX*2),
         QPixmap(GRID_IMG)
         );
-    qDebug()<<"BaseX % PX = "<<BaseX%PX;
-    qDebug()<<"BaseY % PX = "<<BaseY%PX;
+    //qDebug()<<"BaseX % PX = "<<BaseX%PX;
+    //qDebug()<<"BaseY % PX = "<<BaseY%PX;
 
     if(width() > WB*PX || height() > HB*PX){
         QPen pen(QColor(238, 151, 12, 200));
@@ -261,10 +261,10 @@ void GameScene::play()
 
     // if(reverse)qDebug()<<"reverse is true";
     // else qDebug()<<"reverse is false";
-    qDebug()<<"BaseX = "<<BaseX;
-    qDebug()<<"BaseY = "<<BaseY;
+    //qDebug()<<"BaseX = "<<BaseX;
+    //qDebug()<<"BaseY = "<<BaseY;
 
-    qDebug() << "窗口高度：" << height() << " 纵向可显示格子数：" << height()/PX;
+    //qDebug() << "窗口高度：" << height() << " 纵向可显示格子数：" << height()/PX;
 
     // 更新渲染逻辑
     if(deltaRender >= 16){
@@ -383,12 +383,17 @@ void GameScene::expandMap(bool init, QTextStream *in)
 
 void GameScene::finishSubsection()
 {
-    //待实现
+    // 弹出局部强化选项
+    store.setPartial(true);
+    store.setHidden(false);
+    // 进行存档
+    save();
 }
 
 void GameScene::finishSection()
 {
-    //待实现
+    // 进行存档
+    save();
 }
 
 void GameScene::mouseMoveEvent(QMouseEvent *event){
