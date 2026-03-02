@@ -10,7 +10,6 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    begin.cpp \
     center.cpp \
     combiner.cpp \
     config.cpp \
@@ -30,7 +29,6 @@ SOURCES += \
     trash.cpp
 
 HEADERS += \
-    begin.h \
     center.h \
     combiner.h \
     config.h \
