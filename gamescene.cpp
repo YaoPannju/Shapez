@@ -165,6 +165,39 @@ void GameScene::load(QFile *loadFile){
     else{
         //等待实现
     }
+    for(int y=0;y<HB;++y){
+        for(int x=0;x<WB;++x){
+            if(gridMap[y][x] <= 1 || !(gridMap[y][x]&1)) continue;
+            int tp = (gridMap[y][x]>>3)&0b1111;
+            switch(tp){
+            case 2:
+                new Conveyor(x, y, gridMap[y][x], nullptr);
+                break;
+            case 3:
+                new Miner(x, y, gridMap[y][x], nullptr);
+                break;
+            case 4:
+                new Splitter(x, y, gridMap[y][x], nullptr);
+                break;
+            case 5:
+                new Trash(x, y, gridMap[y][x], nullptr);
+                break;
+            case 6:
+                center = new Center(x, y, nullptr);
+                connect(center, &Center::finishSection, this, &GameScene::finishSection);
+                connect(center, &Center::finishSubsection, this, &GameScene::finishSubsection);
+                break;
+            case 7:
+                new Combiner(x, y, gridMap[y][x], nullptr);
+                break;
+            case 9:
+                new Rotator(x, y, gridMap[y][x], nullptr);
+                break;
+            default:
+                break;
+            }
+        }
+    }
 }
 
 void GameScene::paintEvent(QPaintEvent *)
