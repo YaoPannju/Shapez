@@ -9,11 +9,6 @@ class Splitter : public Device
 public:
     Item *item;
     explicit Splitter(int x, int y, int type, QObject *parent = nullptr, bool virt = false);
-
-    void update(int flip) override;
-    bool output(bool mark=false) override;
-    bool checkIpt(int ix, int iy, QVector<Item *> &ipt) override;
-    void input(QVector<Item *> &ipt, int ix=0, int iy=0) override;
 signals:
 };
 

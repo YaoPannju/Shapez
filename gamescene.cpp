@@ -242,7 +242,6 @@ void GameScene::play()
 
 void GameScene::put(int type, int sx, int sy){
     if(putType != 0){
-        // 如果点击某一个按钮时，已经处于 putType 状态
         if(putType == 2){
             if(putConveyor.size()>0){
                 for(auto &con:putConveyor){
@@ -256,13 +255,11 @@ void GameScene::put(int type, int sx, int sy){
                 putting = nullptr;
             }
         }
-        // 如果重复点击的同一个按钮，则代表取消放置状态
         if(putType == type){
             emit resetToolButton(putType);
             putType = 0;
             return ;
         }else{
-            // 否则正常进行（切换按钮）
             emit resetToolButton(putType);
         }
     }
