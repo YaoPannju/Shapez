@@ -52,6 +52,8 @@ public:
     // 存储中心
     Center *center;
 
+    QString savePath = "./data.txt";
+
     // 更新计时
     qint64 lastUpdate, lastRender;
 

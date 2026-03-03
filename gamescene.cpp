@@ -96,7 +96,31 @@ void GameScene::loadGame(const QString &filename)
 void GameScene::save()
 {
     qDebug()<<"Game Process Saved!";
-    //待实现
+    if(gridMap.empty()) return ;
+
+    QFile saveFile(savePath);
+
+    if (!saveFile.open(QIODevice::WriteOnly)) {
+        qWarning() << "Could not open file for writing:" << savePath;
+        return ;
+    }
+
+    QTextStream out(&saveFile);
+    out<<BaseX<<" "<<BaseY<<"\n";
+    out<<process<<" "<<reqCount<<" "<<proCount<<" "<<coin<<"\n";
+    out<<mapGrade<<" "<<centerGrade<<" "<<itemGrade<<"\n";
+    out<<conveyorGrade<<" "<<minerGrade<<" "<<splitterGrade<<"\n\n";
+    for(int i=0;i<HB;++i){
+        for(int j=0;j<WB;++j){
+            out<<gridMap[i][j]<<" ";
+        }
+        out<<"\n";
+    }
+    out<<"\n"<<demands.size()<<"\n";
+    for(auto &demand:demands){
+        out<<demand.first<<" "<<demand.second<<"\n";
+    }
+    saveFile.close();
 }
 
 void GameScene::start()
