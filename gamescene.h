@@ -67,7 +67,7 @@ private:
     unsigned long long flip;
     // 游戏是否处于暂停状态、暂停按钮、提示按钮
     bool pause;
-    ToolButton pauseBtn, storeBtn;
+    ToolButton pauseBtn, closeBtn;
 
     // 背景音乐播放器、背景图片路径
     QAudioOutput *audioOutput;

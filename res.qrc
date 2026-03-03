@@ -21,6 +21,7 @@
         <file>res/Grid.png</file>
         <file>res/ToolBar.png</file>
         <file>res/bg2.png</file>
+        <file>res/close.png</file>
     </qresource>
     <qresource prefix="/belt">
         <file>res/belt/forward_0.png</file>

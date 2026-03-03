@@ -37,19 +37,8 @@ GameScene::GameScene(QWidget *parent)
         }
     });
 
-    storeBtn.set(width() - PX, 0, PX, PX, ":/res/store.png", this);
-    connect(&storeBtn, &QPushButton::clicked, this, [=](){
-        this->pause = true;
-        static QSoundEffect clickSound;
-        clickSound.setSource(QUrl("qrc:/sounds/res/sounds/ui_click.wav"));
-        clickSound.setVolume(0.5);
-        clickSound.play();
-        //this->hide();
-        store.show();
-        connect(&store, &Store::store_closed, this, [=](){
-            this->pause = false;
-        });
-    });
+    closeBtn.set(width() - PX, 0, PX, PX, ":/res/close.png", this);
+    connect(&closeBtn, &QPushButton::clicked, this, &GameScene::RTM_signal);
 
     store.hide();
     connect(&store, &Store::upgradeMap, this, [=](){
@@ -187,7 +176,24 @@ void GameScene::load(QFile *loadFile){
         expandMap(true);
     }
     else{
-        //等待实现
+        gridMap.clear();
+        QTextStream in(loadFile);
+        in>>BaseX>>BaseY;
+        in>>process>>reqCount>>proCount>>coin;
+        in>>mapGrade>>centerGrade>>itemGrade;
+        in>>conveyorGrade>>minerGrade>>splitterGrade;
+        expandMap(true, &in);
+
+        demands.clear();
+        int demandsLength = 0;
+        in>>demandsLength;
+        for(int i=0;i<demandsLength;++i){
+            int dx, dy;
+            in>>dx>>dy;
+            demands.append(QPair<int, int>(dx, dy));
+        }
+
+        loadFile->close();
     }
     for(int y=0;y<HB;++y){
         for(int x=0;x<WB;++x){

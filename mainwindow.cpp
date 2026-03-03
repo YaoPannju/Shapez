@@ -50,8 +50,8 @@ MainWindow::MainWindow(QWidget *parent)
             connect(gamescene, &GameScene::RTM_signal, this, [this]() {
                 this->show();
                 player->play();
-                delete gamescene;
-                gamescene = nullptr;
+                //delete gamescene;
+                //gamescene = nullptr;
                 qDebug() << "当前在主界面";
             });
             gamescene->load(nullptr);
@@ -64,26 +64,44 @@ MainWindow::MainWindow(QWidget *parent)
 
     BtnClickAnimation(readbtn, [this]() {
         QTimer::singleShot(500,this,[=](){
-            QString filename = QFileDialog::getOpenFileName(this, tr("选择存档文件"), "saves", tr("JSON 文件 (*.json)"));
-
-            if (!filename.isEmpty()) {
-                //loadGameAndSwitchToGameScene(filename);
-            } else {
-                QMessageBox::warning(this, "警告", "未选择存档文件");
-            }
+            QString filePath = QFileDialog::getOpenFileName(this, "读取存档", QDir().absoluteFilePath("./"), "(*.txt)");
+            QFile loadFile(filePath);
+            player->pause();
+            this->hide();
+            gamescene->setGeometry(this->geometry());
+            connect(gamescene, &GameScene::RTM_signal, this, [this]() {
+                this->show();
+                player->play();
+                delete gamescene;
+                gamescene = nullptr;
+                qDebug() << "当前在主界面";
+            });
+            gamescene->load(&loadFile);
+            gamescene->start();
+            gamescene->show();
+            (gamescene->player)->play();
+            qDebug() << "当前在游戏界面";
         });
     }, 100);
 
     BtnClickAnimation(continuebtn, [this]() {
         QTimer::singleShot(500,this,[=](){
-            QString defaultSaveFile = "auto_save/auto_save.json";
-            QFile file(defaultSaveFile);
-
-            if (file.exists()) {
-                //loadGameAndSwitchToGameScene(defaultSaveFile);
-            } else {
-                QMessageBox::warning(this, "继续游戏", "未找到存档文件，请开始新游戏或加载其他存档。");
-            }
+          QFile loadFile("./data.txt");
+          player->pause();
+          this->hide();
+          gamescene->setGeometry(this->geometry());
+          connect(gamescene, &GameScene::RTM_signal, this, [this]() {
+              this->show();
+              player->play();
+              delete gamescene;
+              gamescene = nullptr;
+              qDebug() << "当前在主界面";
+          });
+          gamescene->load(&loadFile);
+          gamescene->start();
+          gamescene->show();
+          (gamescene->player)->play();
+          qDebug() << "当前在游戏界面";
         });
     }, 100);
 }
